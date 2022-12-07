@@ -29,6 +29,7 @@ Contains Ansible code to automate the installation of OneAgent Dynatrace in Win 
 - Directory *files* has the OneAgent installers for Windows and Linux. See [references](#references).
 - Directory *src* has the Ansible playbooks to install OneAgent in both Linux and Windows machines.
 
+
 # Mac Setup
 
 1. Execute script install.sh located in *src* directory.
