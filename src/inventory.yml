@@ -1,0 +1,31 @@
+---
+all:
+  children:
+    unix:
+      children:
+        linux:
+          children:
+            linux_x86:
+              hosts: 20.115.29.149
+              vars:
+                ansible_ssh_private_key_file: ./dynatrace-az-vm
+                ansible_user: azureuser
+                ansible_become: true # will prompt for root password in Ansible control node (Mac machine)
+                one_agent_is_installed: true
+                run_one_agent: true
+    windows:
+      children:
+        win:
+          children:
+            win_x86:
+              hosts: 40.87.94.76
+              vars:
+                ansible_user: azureuser
+                ansible_password: Quepinga!71
+                ansible_connection: winrm
+                ansible_winrm_transport: basic
+                ansible_winrm_server_cert_validation: ignore
+                one_agent_is_installed: true
+                run_one_agent: false
+
+

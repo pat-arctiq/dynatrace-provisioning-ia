@@ -1,0 +1,50 @@
+---
+- name: Installing OneAgent on Win machine
+  hosts: win_x86
+  collections:
+    - dynatrace.oneagent
+  vars:
+    oneagent_paas_token: ''
+    oneagent_environment_url: ''
+    # Set local installer location
+    oneagent_latest_version: '1.253.245'
+    oneagent_local_installer: './Dynatrace-OneAgent-Windows-1.253.245.exe'
+    # Set installer download architecture
+    oneagent_installer_arch: 'x86'
+    # Set the OneAgent common installer parameters
+    oneagent_install_args:
+      - --set-infra-only=false
+      - --set-app-log-content-access=true
+      - --set-host-property=Test-OneAgent_Installation
+      - --set-host-property=Environment=Dev
+      - --set-host-tag=machine_type=AzureWindowsHost
+      - --set-host-tag=role=dev
+      - --set-host-id-source=fqdn
+      - --set-system-logs-access-enabled=true
+      - --set-app-log-content-access=true
+      - --set-auto-injection-enabled=true
+      - --set-extensions-ingest-port=14449
+       # Set the OneAgent platform-specific installer parameters
+    oneagent_platform_install_args:
+      - INSTALL_PATH=%PROGRAMFILES%\dynatrace\oneagent
+      - LOG_PATH=%PROGRAMDATA%\oneagent\log # Logs can not be stored under 'dynatrace\*\log directory, the installation will complain about it'
+      - USER=LocalSystem
+   # Set the need of rebooting machine after installation
+    oneagent_reboot_host: false
+    # Set the timeout for platform reboot
+    oneagent_reboot_timeout: 300
+  tasks:
+    - import_role:
+        name: oneagent
+      when: not one_agent_is_installed
+    - name: Start OneAgent
+      ansible.windows.win_service:
+        name: Dynatrace OneAgent
+        state: started
+      when: run_one_agent
+    - name: Stop OneAgent
+      ansible.windows.win_service:
+        name: Dynatrace OneAgent
+        state: stopped
+      when: not run_one_agent
+

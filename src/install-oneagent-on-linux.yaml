@@ -1,0 +1,56 @@
+---
+- name: Installing OneAgent on Linux machine
+  hosts: linux_x86
+  become: yes
+  collections:
+    - dynatrace.oneagent
+  vars:
+    oneagent_paas_token: ''
+    oneagent_environment_url: ''
+    oneagent_latest_version: '1.253.245'
+    oneagent_local_installer: './Dynatrace-OneAgent-Linux-1.253.245.sh'
+    # Set installer download architecture
+    oneagent_installer_arch: 'x86'
+    # Set the OneAgent common installer parameters
+    oneagent_install_args:
+      - --set-infra-only=false
+      - --set-app-log-content-access=true
+      - --set-host-property=Test-OneAgent_Installation
+      - --set-host-property=Environment=Dev
+      - --set-host-tag=machine_type=AzureLinuxHost
+      - --set-host-tag=role=dev
+      - --set-host-id-source=fqdn
+      - --set-system-logs-access-enabled=true
+      - --set-app-log-content-access=true
+      - --set-auto-injection-enabled=true
+      - --set-extensions-ingest-port=14449
+       # Set the OneAgent platform-specific installer parameters
+    oneagent_platform_install_args:
+      - INSTALL_PATH=/opt/dynatrace/oneagent
+      - LOG_PATH=/var/log/dynatrace/oneagent
+      - NON_ROOT_MODE=1
+      - DISABLE_ROOT_FALLBACK=0
+      - USER=dtuser_az
+      - GROUP=dtuser_az_installers
+   # Set the need of rebooting machine after installation
+    oneagent_reboot_host: false
+    # Set the timeout for platform reboot
+    oneagent_reboot_timeout: 300
+  tasks:
+    - name: Install Semanage
+      ansible.builtin.yum:
+        name: policycoreutils-python-2.5-34.el7.x86_64
+        update_cache: true
+        state: latest
+    - import_role:
+        name: oneagent
+      when: not one_agent_is_installed
+    - name: Start OneAgent
+      ansible.builtin.shell: |
+        systemctl start oneagent
+      when: run_one_agent
+    - name: Stop OneAgent
+      ansible.builtin.shell: |
+        systemctl stop oneagent
+      when: not run_one_agent
+
