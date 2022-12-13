@@ -43,6 +43,13 @@ install.sh -ansible - Installs several versions of Ansible. Supported Ansible ve
 install.sh -oneagent - Installs OneAgent on Windows and Linux machines
 ```
 
+2. Cloning the project
+
+```bash
+https://pat-arctiq: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@github.com/pat-arctiq/dynatrace-provisioning-ia.git
+
+```
+
 
 ## References
 - [List of Azure VM](https://learn.microsoft.com/en-us/azure/backup/backup-azure-policy-supported-skus)
